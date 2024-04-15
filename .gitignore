@@ -176,3 +176,4 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 .DS_Store
 frontend/README.md
+backend/db/migrations/script.py.mako
