@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from schema.question.request import CreateQuestionRequest, UpdateQuestionRequest
+from schema.question.request import CreateAnswerRequest, CreateQuestionRequest, UpdateQuestionRequest
 
 
 Base = declarative_base()
@@ -52,3 +52,22 @@ class Answer(Base):
 
     def __repr__(self):
         return f"<Answer(id={self.id}, question_id={self.question_id}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
+    
+    @classmethod
+    def create(
+        cls,
+        request: CreateAnswerRequest,
+        question_id: int,
+    ) -> "Answer":
+        return cls(
+            question_id=question_id,
+            content=request.content,
+            author_id=1, # user 모델 완성후 수정
+            create_date=datetime.datetime.now(),
+            modify_date=None,
+        )
+    
+    def update(self, request: CreateAnswerRequest, answer: "Answer") -> "Answer":
+        answer.content = request.content
+        answer.modify_date = datetime.datetime.now()
+        return answer

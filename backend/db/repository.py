@@ -35,3 +35,28 @@ class QuestionRepository:
         self.session.delete(instance=question)
         self.session.commit()
 
+class AnswerRepository:
+    def __init__(self, session: Session = Depends(get_db)):
+        self.session = session
+
+    def get_answer_list_by_question(self, question_id: int) -> List[Answer]:
+        return list(self.session.scalars(select(Answer).where(Answer.question_id == question_id)))
+    
+    def get_answer_by_answer_id(self, answer_id: int) -> Answer:
+        return self.session.scalar(select(Answer).where(Answer.id == answer_id))
+
+    def create_answer(self, answer: Answer) -> Answer:
+        self.session.add(instance=answer)
+        self.session.commit()
+        self.session.refresh(instance=answer)
+        return answer
+    
+    def update_answer(self, answer: Answer) -> Answer:
+        self.session.add(instance=answer)
+        self.session.commit()
+        self.session.refresh(instance=answer)
+        return answer
+    
+    def delete_answer(self, answer: Answer) -> None:
+        self.session.delete(instance=answer)
+        self.session.commit()

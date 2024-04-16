@@ -1,9 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 
-from db.connection import get_db
 from db.repository import QuestionRepository
 from db.orm import Question
 from schema.question.response import QuestionListSchema, QuestionSchema
