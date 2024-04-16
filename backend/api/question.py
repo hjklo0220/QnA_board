@@ -12,13 +12,13 @@ router = APIRouter(prefix="/question")
 
 @router.get("/list", status_code=200)
 def get_questions_handler(
-    order: str | None = None,
+    page: int = 0,
+    size: int = 10,
     question_repo: QuestionRepository = Depends(),
 ):
-    question_list: List[QuestionListSchema] = question_repo.get_question_list()
-
-    if order and order == "desc":
-        return question_list[::-1]
+    question_list: dict[QuestionListSchema]= question_repo.get_question_list(
+        page_number=page, page_size=size
+    )
     return question_list
 
 @router.get("/{question_id}", status_code=200)

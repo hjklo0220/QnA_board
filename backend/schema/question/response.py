@@ -31,5 +31,6 @@ class QuestionSchema(BaseModel):
 
 
 class QuestionListSchema(BaseModel):
+    total: int
     questions: List[QuestionSchema]
 
