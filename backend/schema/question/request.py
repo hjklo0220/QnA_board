@@ -3,6 +3,12 @@ class CreateQuestionRequest(BaseModel):
     subject: str
     content: str
 
+    @field_validator('subject', 'content')
+    def not_empty(cls, v):
+        if not v or not v.strip():
+            raise ValueError('not empty')
+        return v
+
 class UpdateQuestionRequest(BaseModel):
     subject: str
     content: str

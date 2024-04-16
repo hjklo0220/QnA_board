@@ -32,7 +32,7 @@ def get_question_handler(
         return QuestionSchema.from_orm(question)
     raise HTTPException(status_code=404, detail="Question not found")
 
-@router.post("", status_code=201)
+@router.post("/create", status_code=201)
 def create_question_handler(
     request: CreateQuestionRequest,
     question_repo: QuestionRepository = Depends(),
