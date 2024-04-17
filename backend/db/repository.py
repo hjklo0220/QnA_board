@@ -1,8 +1,8 @@
 from typing import List
 
 from fastapi import Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import func, select
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select
 
 from db.connection import get_db
 from db.orm import Question, Answer
@@ -12,19 +12,21 @@ class QuestionRepository:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-    def get_question_list(self, page_number: int, page_size: int) -> dict:
+    def get_question_list(self, page_number: int, page_size: int) -> tuple:
         # 페이징 정보
         # page_number = 1  # 페이지 번호
         # page_size = 10   # 페이지 당 아이템 수
 
         offset = page_number*page_size
-        query = select(Question).offset(offset).limit(page_size).order_by(Question.create_date.desc())
-        question_list = self.session.execute(query).scalars().all()
-        total = self.session.scalar(select(func.count()).select_from(Question))
-        return {
-            "total": total,
-            'question_list': question_list,
-        }
+        _question_list = (
+            self.session.query(Question)
+            .options(joinedload(Question.answers))
+            .order_by(Question.create_date.desc())
+        )
+        
+        total: int = _question_list.count()
+        question_list = _question_list.offset(offset).limit(page_size).all()
+        return total, question_list
     
     def get_question_by_id(self, question_id: int) -> Question:
         return self.session.scalar(select(Question).where(Question.id == question_id))
