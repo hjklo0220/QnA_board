@@ -2,6 +2,8 @@
     import fastapi from "../lib/api";
     import { link } from "svelte-spa-router"
     import { page } from "../lib/store"
+    import moment from 'moment/min/moment-with-locales'
+    moment.locale('ko')
 
     let question_list = []
     let size = 10
@@ -17,6 +19,7 @@
             question_list = json.question_list
             $page = _page
             total = json.total
+            console.log(question_list)
         })
     }
 
@@ -37,11 +40,14 @@
         <tbody>
         {#each question_list as question, i}
         <tr>
-            <td>{i+1}</td>
+            <td class="text-center">{ total - ($page * size) - i }</td>
             <td>
                 <a use:link href="/question/{question.id}">{question.subject}</a>
+                {#if question.answers.length > 0 }
+                <span class="text-danger small mx-2">{question.answers.length}</span>
+                {/if}
             </td>
-            <td>{new Date(question.create_date).toLocaleDateString('ko-KR')}</td>
+            <td class="text-center">{moment(question.create_date).format("YYYY년 MM월 DD일 hh:mm a")}</td>
         </tr>
         {/each}
         </tbody>
