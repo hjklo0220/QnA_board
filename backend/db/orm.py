@@ -1,5 +1,6 @@
 import datetime
 
+from pydantic import EmailStr
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -71,3 +72,25 @@ class Answer(Base):
         answer.content = request.content
         answer.modify_date = datetime.datetime.now()
         return answer
+    
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(100), nullable=False)
+    email = Column(String(200), nullable=False)
+    create_date = Column(DateTime, unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<User(id={self.id}, username={self.username}, password={self.password}, email={self.email}, create_date={self.create_date}, modify_date={self.modify_date}>"
+
+    @classmethod
+    def create(cls, username: str, hashed_password: str, email: EmailStr) -> "User":
+        return cls(
+            username=username,
+            password=hashed_password,
+            email=email,
+            create_date=datetime.datetime.now(),
+        )

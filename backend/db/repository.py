@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
 
 from db.connection import get_db
-from db.orm import Question, Answer
+from db.orm import Question, Answer, User
 
 
 class QuestionRepository:
@@ -73,3 +73,19 @@ class AnswerRepository:
     def delete_answer(self, answer: Answer) -> None:
         self.session.delete(instance=answer)
         self.session.commit()
+
+class UserRepository:
+    def __init__(self, session: Session = Depends(get_db)):
+        self.session = session
+
+    def get_existing_user(self, username: str) -> User | None:
+        return self.session.scalar(select(User).where(User.username == username))
+    
+    def get_user(self, username: int) -> User:
+        return self.session.scalar(select(User).where(User.username == username))
+
+    def save_user(self, user: User) -> User:
+        self.session.add(instance=user)
+        self.session.commit()
+        self.session.refresh(instance=user)
+        return user
