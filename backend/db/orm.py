@@ -16,9 +16,10 @@ class Question(Base):
     id = Column(Integer, primary_key=True)
     subject = Column(String(200), nullable=False)
     content = Column(Text, nullable=False)
-    author_id = Column(Integer, nullable=False)
     create_date = Column(DateTime, nullable=False)
     modify_date = Column(DateTime, nullable=True)
+    author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
+    user = relationship("User", backref="question_users")
 
     def __repr__(self):
         return f"<Question(id={self.id}, subject={self.subject}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
@@ -46,10 +47,11 @@ class Answer(Base):
     id = Column(Integer, primary_key=True)
     question_id = Column(Integer, ForeignKey('question.id'))
     content = Column(Text, nullable=False)
-    author_id = Column(Integer, nullable=False)
     create_date = Column(DateTime, nullable=False)
     modify_date = Column(DateTime, nullable=True)
     question = relationship(Question, backref="answers")
+    author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
+    user = relationship("User", backref="answer_users")
 
     def __repr__(self):
         return f"<Answer(id={self.id}, question_id={self.question_id}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
