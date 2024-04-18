@@ -2,10 +2,12 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from db.repository import QuestionRepository
-from db.orm import Question
+from db.repository import QuestionRepository, UserRepository
+from db.orm import Question, User
 from schema.question.response import QuestionListSchema, QuestionSchema
 from schema.question.request import CreateQuestionRequest
+from security import get_access_token
+from service.user import UserService
 
 
 router = APIRouter(prefix="/question")
@@ -37,9 +39,17 @@ def get_question_handler(
 @router.post("/create", status_code=201)
 def create_question_handler(
     request: CreateQuestionRequest,
+    access_token: str = Depends(get_access_token),
     question_repo: QuestionRepository = Depends(),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
 ) -> QuestionSchema:
-    question: Question = Question.create(request=request)
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    question: Question = Question.create(request=request, author_id=user.id)
     question: Question = question_repo.create_question(question=question)
 
     return QuestionSchema.from_orm(question)

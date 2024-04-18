@@ -25,11 +25,11 @@ class Question(Base):
         return f"<Question(id={self.id}, subject={self.subject}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
 
     @classmethod
-    def create(cls, request: CreateQuestionRequest) -> "Question":
+    def create(cls, request: CreateQuestionRequest, author_id: int) -> "Question":
         return cls(
             subject=request.subject,
             content=request.content,
-            author_id=1, # user 모델 완성후 수정
+            author_id=author_id,
             create_date=datetime.datetime.now(),
             modify_date=None,
         )
@@ -61,11 +61,12 @@ class Answer(Base):
         cls,
         request: CreateAnswerRequest,
         question_id: int,
+        author_id: int,
     ) -> "Answer":
         return cls(
             question_id=question_id,
             content=request.content,
-            author_id=1, # user 모델 완성후 수정
+            author_id=author_id, # user 모델 완성후 수정
             create_date=datetime.datetime.now(),
             modify_date=None,
         )
