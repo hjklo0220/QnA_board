@@ -34,7 +34,8 @@
         <tr class="table-dark">
             <th>번호</th>
             <th>제목</th>
-            <th>작성일시</th>
+            <th>작성일</th>
+            <th>수정일</th>
         </tr>
         </thead>
         <tbody>
@@ -47,7 +48,12 @@
                 <span class="text-danger small mx-2">{question.answers.length}</span>
                 {/if}
             </td>
-            <td class="text-center">{moment(question.create_date).format("YYYY년 MM월 DD일 hh:mm a")}</td>
+            <td class="text-center">{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
+            {#if question.modify_date}
+                <td class="text-center">{moment(question.modify_date).format("YYYY-MM-DD HH:mm")}</td>
+            {:else}
+                <td class="text-center">{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
+            {/if}
         </tr>
         {/each}
         </tbody>

@@ -47,8 +47,13 @@
             <div class="card-text" style="white-space: pre-line;">{question.content}</div>
             <div class="d-flex justify-content-end">
                 <div class="badge bg-light text-dark p-2 mt-3">
-                    {moment(question.create_date).format("YYYY년 MM월 DD일 hh:mm a")}
+                    {moment(question.create_date).format("YYYY-MM-DD HH:mm")}
                 </div>
+                {#if question.modify_date}
+                <div class="badge bg-light text-dark p-2 mt-3">
+                    {moment(question.modify_date).format("YYYY-MM-DD HH:mm")}
+                </div>
+                {/if}
             </div>
         </div>
     </div>
@@ -66,7 +71,7 @@
             <div class="card-text" style="white-space: pre-line;">{answer.content}</div>
             <div class="d-flex justify-content-end">
                 <div class="badge bg-light text-dark p-2 mt-3">
-                    {moment(answer.create_date).format("YYYY년 MM월 DD일 hh:mm a")}
+                    {moment(answer.create_date).format("YYYY-MM-DD HH:mm")}
                 </div>
             </div>
         </div>
