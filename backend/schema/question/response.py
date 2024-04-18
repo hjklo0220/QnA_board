@@ -3,6 +3,8 @@ import datetime
 
 from pydantic import BaseModel
 
+from schema.user.response import UserSchema
+
 class AnswerSchema(BaseModel):
     id: int
     question_id: int
@@ -10,6 +12,7 @@ class AnswerSchema(BaseModel):
     author_id: int
     create_date: datetime.datetime
     modify_date: datetime.datetime | None
+    user: UserSchema | None
 
     class Config:
         from_attributes=True
@@ -23,6 +26,7 @@ class QuestionSchema(BaseModel):
     create_date: datetime.datetime
     modify_date: datetime.datetime | None
     answers: List[AnswerSchema] = []
+    user: UserSchema | None
 
 
     class Config:
@@ -32,5 +36,5 @@ class QuestionSchema(BaseModel):
 
 class QuestionListSchema(BaseModel):
     total: int
-    questions: List[QuestionSchema]
+    question_list: List[QuestionSchema]
 

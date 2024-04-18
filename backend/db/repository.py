@@ -20,7 +20,6 @@ class QuestionRepository:
         offset = page_number*page_size
         _question_list = (
             self.session.query(Question)
-            .options(joinedload(Question.answers))
             .order_by(Question.create_date.desc())
         )
         

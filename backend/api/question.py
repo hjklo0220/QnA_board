@@ -17,13 +17,10 @@ def get_questions_handler(
     page: int = 0,
     size: int = 10,
     question_repo: QuestionRepository = Depends(),
-):
+) -> QuestionListSchema:
     total, question_list= question_repo.get_question_list(page_number=page, page_size=size)
     
-    return {
-        "total": total,
-        "question_list": question_list,
-    }
+    return QuestionListSchema(total=total, question_list=question_list)
 
 @router.get("/{question_id}", status_code=200)
 def get_question_handler(
