@@ -55,12 +55,22 @@ def create_question_handler(
 def update_question_handler(
     question_id: int,
     request: CreateQuestionRequest,
+    access_token: str = Depends(get_access_token),
     question_repo: QuestionRepository = Depends(),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
 ):
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
     question: Question | None = question_repo.get_question_by_id(question_id)
-
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+    
+    if question.author_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     update_question = question.update(request=request, question=question)
     question: Question = question_repo.update_question(question=update_question)
@@ -70,11 +80,22 @@ def update_question_handler(
 @router.delete("/{question_id}", status_code=204)
 def delete_question_handler(
     question_id: int,
+    access_token: str = Depends(get_access_token),
     question_repo: QuestionRepository = Depends(),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
 ):
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
     question: Question | None = question_repo.get_question_by_id(question_id)
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+    
+    if question.author_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     question_repo.delete_question(question=question)
 

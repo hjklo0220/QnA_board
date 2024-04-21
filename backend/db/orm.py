@@ -19,6 +19,7 @@ class Question(Base):
     create_date = Column(DateTime, nullable=False)
     modify_date = Column(DateTime, nullable=True)
     author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
+    answers = relationship("Answer", back_populates="question", cascade="all, delete-orphan")
     user = relationship("User", backref="question_users")
 
     def __repr__(self):
@@ -49,7 +50,7 @@ class Answer(Base):
     content = Column(Text, nullable=False)
     create_date = Column(DateTime, nullable=False)
     modify_date = Column(DateTime, nullable=True)
-    question = relationship(Question, backref="answers")
+    question = relationship(Question, back_populates="answers")
     author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
     user = relationship("User", backref="answer_users")
 
