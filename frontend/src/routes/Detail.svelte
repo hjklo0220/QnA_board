@@ -1,8 +1,8 @@
 <script>
     import fastapi from "../lib/api";
     import Error from "../components/Error.svelte";
-    import { push } from 'svelte-spa-router';
-    import { is_login } from "../lib/store"
+    import { link, push } from 'svelte-spa-router';
+    import { is_login, username } from "../lib/store"
     import moment from 'moment/min/moment-with-locales'
     moment.locale('ko')
 
@@ -38,6 +38,23 @@
         )
     }
 
+    function delete_question(_question_id) {
+        if(window.confirm('정말로 삭제하시겠습니까?')) {
+            let url = "/question/" + question_id
+            let params = {
+                question_id: _question_id
+            }
+            fastapi('delete', url, params, 
+                (json) => {
+                    push('/')
+                },
+                (err_json) => {
+                    error = err_json
+                }
+            )
+        }
+    }
+
 </script>
 <div class="container my-3">
     <!-- 질문 -->
@@ -55,6 +72,14 @@
                 </div>
                 {/if}
             </div>
+            <div class="my-3">
+                {#if question.user && $username === question.user.username }
+                <a use:link href="/question-modify/{question.id}" 
+                    class="btn btn-sm btn-outline-secondary">수정</a>
+                <button class="btn btn-sm btn-outline-danger"
+                on:click={() => delete_question(question.id)}>삭제</button>
+                {/if}
+            </div>
         </div>
     </div>
 
@@ -70,8 +95,12 @@
         <div class="card-body">
             <div class="card-text" style="white-space: pre-line;">{answer.content}</div>
             <div class="d-flex justify-content-end">
-                <div class="badge bg-light text-dark p-2 mt-3">
-                    {moment(answer.create_date).format("YYYY-MM-DD HH:mm")}
+                <div class="badge bg-light text-dark p-2 mt-3 text-start">
+                    <div class="mb-2">작성자: { question.user ? question.user.username : ""}</div>
+                    <div class="mb-2">작성일: {moment(answer.create_date).format("YYYY-MM-DD HH:mm")}</div>
+                    {#if answer.modify_date}
+                    <div class="mb-2">수정일: {moment(answer.modify_date).format("YYYY-MM-DD HH:mm")}</div>
+                    {/if}
                 </div>
             </div>
         </div>

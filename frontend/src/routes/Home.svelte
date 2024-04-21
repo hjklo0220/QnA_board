@@ -19,7 +19,6 @@
             question_list = json.question_list
             $page = _page
             total = json.total
-            console.log(question_list)
         })
     }
 
@@ -31,28 +30,30 @@
   <div class="container my-3">
     <table class="table">
         <thead>
-        <tr class="table-dark">
+        <tr class="table-dark text-center">
             <th>번호</th>
-            <th>제목</th>
+            <th style="width:50%">제목</th>
+            <th>작성자</th>
             <th>작성일</th>
             <th>수정일</th>
         </tr>
         </thead>
         <tbody>
         {#each question_list as question, i}
-        <tr>
-            <td class="text-center">{ total - ($page * size) - i }</td>
-            <td>
+        <tr class="text-center">
+            <td>{ total - ($page * size) - i }</td>
+            <td class="text-start">
                 <a use:link href="/question/{question.id}">{question.subject}</a>
                 {#if question.answers.length > 0 }
                 <span class="text-danger small mx-2">{question.answers.length}</span>
                 {/if}
             </td>
-            <td class="text-center">{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
+            <td>{ question.user ? question.user.username : "" }</td>
+            <td>{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
             {#if question.modify_date}
-                <td class="text-center">{moment(question.modify_date).format("YYYY-MM-DD HH:mm")}</td>
+                <td>{moment(question.modify_date).format("YYYY-MM-DD HH:mm")}</td>
             {:else}
-                <td class="text-center">{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
+                <td>{moment(question.create_date).format("YYYY-MM-DD HH:mm")}</td>
             {/if}
         </tr>
         {/each}
