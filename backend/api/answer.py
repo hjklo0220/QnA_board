@@ -12,6 +12,14 @@ from service.user import UserService
 router = APIRouter(prefix="/answer")
 
 @router.get("/{answer_id}", status_code=200)
+def get_answer_handler(
+    answer_id: int,
+    answer_repo: AnswerRepository = Depends(),
+) -> AnswerSchema:
+    answer: Answer = answer_repo.get_answer_by_answer_id(answer_id)
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    return AnswerSchema.from_orm(answer)
 
 @router.post("/create/{question_id}", status_code=201)
 def create_answer_handler(
@@ -40,12 +48,22 @@ def create_answer_handler(
 def update_answer_handler(
     answer_id: int,
     request: CreateAnswerRequest,
-    _: str = Depends(get_access_token),
-    answer_repo: AnswerRepository = Depends()
+    access_token: str = Depends(get_access_token),
+    answer_repo: AnswerRepository = Depends(),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
 ) -> AnswerSchema:
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
     answer: Answer | None = answer_repo.get_answer_by_answer_id(answer_id)
     if not answer:
         raise HTTPException(status_code=404, detail="Answer not found")
+    
+    if answer.author_id != user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     
     update_answer: Answer = answer.update(answer=answer, request=request)
 
@@ -55,12 +73,22 @@ def update_answer_handler(
 @router.delete("/delete/{answer_id}", status_code=204)
 def delete_answer_handler(
     answer_id: int,
-    _: str = Depends(get_access_token),
+    access_token: str = Depends(get_access_token),
     answer_repo: AnswerRepository = Depends(),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
 ):
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
     answer: Answer | None = answer_repo.get_answer_by_answer_id(answer_id)
     if not answer:
         raise HTTPException(status_code=404, detail="Answer not found")
+    
+    if answer.author_id != user.id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     
     answer_repo.delete_answer(answer=answer)
     
