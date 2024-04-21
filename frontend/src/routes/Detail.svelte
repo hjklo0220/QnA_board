@@ -40,13 +40,30 @@
 
     function delete_question(_question_id) {
         if(window.confirm('정말로 삭제하시겠습니까?')) {
-            let url = "/question/" + question_id
+            let url = "/question/" + _question_id
             let params = {
                 question_id: _question_id
             }
             fastapi('delete', url, params, 
                 (json) => {
                     push('/')
+                },
+                (err_json) => {
+                    error = err_json
+                }
+            )
+        }
+    }
+
+    function delete_answer(answer_id) {
+        if(window.confirm('정말로 삭제하시겠습니까?')) {
+            let url = "/answer/delete/" + answer_id
+            let params = {
+                answer_id: answer_id
+            }
+            fastapi('delete', url, params, 
+                (json) => {
+                    get_question()
                 },
                 (err_json) => {
                     error = err_json
@@ -103,6 +120,14 @@
                     {/if}
                 </div>
             </div>
+            <div class="my-3">
+                {#if answer.user && $username === answer.user.username }
+                <a use:link href="/answer-modify/{answer.id}" 
+                    class="btn btn-sm btn-outline-secondary">수정</a>
+                <button class="btn btn-sm btn-outline-danger"
+                on:click={() => delete_answer(answer.id) }>삭제</button>
+                {/if}
+            </div>
         </div>
     </div>
     {/each}
@@ -110,7 +135,7 @@
     <Error error={error} />
     <form method="post" class="my-3">
         <div class="mb-3">
-            <textarea rows="10" bind:value={content} 
+            <textarea rows="10" bind:value={content}
                 disabled={$is_login ? "" : "disabled"}
                 class="form-control" />
         </div>
