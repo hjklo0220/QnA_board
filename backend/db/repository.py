@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import Depends
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 from db.connection import get_db
 from db.orm import Question, Answer, User, question_voter
@@ -23,7 +23,7 @@ class QuestionRepository:
                 question.voter.append(user)
         self.session.commit()
 
-    def get_question_list(self, page_number: int, page_size: int) -> tuple:
+    def get_question_list(self, page_number: int, page_size: int, keyword: str = "") -> tuple:
         # 페이징 정보
         # page_number = 1  # 페이지 번호
         # page_size = 10   # 페이지 당 아이템 수
@@ -33,6 +33,19 @@ class QuestionRepository:
             self.session.query(Question)
             .order_by(Question.create_date.desc())
         )
+        if keyword:
+            search = "%{}%".format(keyword)
+            sub_query = self.session.query(Answer.question_id, Answer.content, User.username)\
+                .outerjoin(User, and_(Answer.author_id == User.id)).subquery()
+            _question_list = _question_list \
+                .outerjoin(User) \
+                .outerjoin(sub_query, and_(sub_query.c.question_id == Question.id)) \
+                .filter(Question.subject.ilike(search) |
+                        Question.content.ilike(search) |
+                        User.username.ilike(search) |
+                        sub_query.c.content.ilike(search) |
+                        sub_query.c.username.ilike(search)
+                        )
         
         total: int = _question_list.count()
         question_list = _question_list.offset(offset).limit(page_size).all()

@@ -16,9 +16,10 @@ router = APIRouter(prefix="/question")
 def get_questions_handler(
     page: int = 0,
     size: int = 10,
+    keyword: str = "",
     question_repo: QuestionRepository = Depends(),
 ) -> QuestionListSchema:
-    total, question_list= question_repo.get_question_list(page_number=page, page_size=size)
+    total, question_list= question_repo.get_question_list(page_number=page, page_size=size, keyword=keyword)
     
     return QuestionListSchema(total=total, question_list=question_list)
 
