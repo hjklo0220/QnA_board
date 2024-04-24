@@ -14,7 +14,7 @@ class QuestionRepository:
 
     def vote_question(self, question_id: int, user_id: int) -> None:
         question: Question = self.session.scalar(select(Question).where(Question.id == question_id))
-        user = self.session.scalar(select(User).where(User.id == user_id))
+        user: User = self.session.scalar(select(User).where(User.id == user_id))
         if question and user:
             # question.voter에 user가 있는지 확인
             if user in question.voter:
@@ -22,9 +22,6 @@ class QuestionRepository:
             else:
                 question.voter.append(user)
         self.session.commit()
-        print(question.voter)
-
-        return question.voter
 
     def get_question_list(self, page_number: int, page_size: int) -> tuple:
         # 페이징 정보
@@ -64,6 +61,18 @@ class QuestionRepository:
 class AnswerRepository:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
+
+    def vote_answer(self, answer_id: int, user_id: int) -> None:
+        answer: Answer = self.session.scalar(select(Answer).where(Answer.id == answer_id))
+        user: User = self.session.scalar(select(User).where(User.id == user_id))
+
+        if answer and user:
+            if user in answer.voter:
+                answer.voter.remove(user)
+            else:
+                answer.voter.append(user)
+
+        self.session.commit()
 
     def get_answer_list_by_question(self, question_id: int) -> List[Answer]:
         return list(self.session.scalars(select(Answer).where(Answer.question_id == question_id)))

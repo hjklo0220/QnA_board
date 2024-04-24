@@ -13,6 +13,7 @@ class AnswerSchema(BaseModel):
     create_date: datetime.datetime
     modify_date: datetime.datetime | None
     user: UserSchema | None
+    voter: List[UserSchema]
 
     class Config:
         from_attributes=True

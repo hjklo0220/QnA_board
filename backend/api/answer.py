@@ -91,5 +91,25 @@ def delete_answer_handler(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     
     answer_repo.delete_answer(answer=answer)
+
+@router.post("/{answer_id}/vote", status_code=200)
+def vote_answer_handler(
+    answer_id: int,
+    access_token: str = Depends(get_access_token),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
+    answer_repo: AnswerRepository = Depends(),
+) -> AnswerSchema:
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    answer: Answer | None = answer_repo.get_answer_by_answer_id(answer_id)
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+
+    answer_repo.vote_answer(answer_id=answer.id, user_id=user.id)
+    return AnswerSchema.from_orm(answer)
     
 
