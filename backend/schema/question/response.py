@@ -27,6 +27,7 @@ class QuestionSchema(BaseModel):
     modify_date: datetime.datetime | None
     answers: List[AnswerSchema] = []
     user: UserSchema | None
+    voter: List[UserSchema]
 
 
     class Config:
@@ -38,3 +39,6 @@ class QuestionListSchema(BaseModel):
     total: int
     question_list: List[QuestionSchema]
 
+
+class QuestionVoteSchema(BaseModel):
+    question_id: int

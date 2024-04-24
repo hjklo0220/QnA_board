@@ -1,7 +1,7 @@
 import datetime
 
 from pydantic import EmailStr
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -21,6 +21,7 @@ class Question(Base):
     author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
     answers = relationship("Answer", back_populates="question", cascade="all, delete-orphan")
     user = relationship("User", backref="question_users")
+    voter = relationship("User", secondary="question_voter", backref="question_voters")
 
     def __repr__(self):
         return f"<Question(id={self.id}, subject={self.subject}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
@@ -53,6 +54,7 @@ class Answer(Base):
     question = relationship(Question, back_populates="answers")
     author_id = Column(Integer, ForeignKey("user.id") , nullable=False)
     user = relationship("User", backref="answer_users")
+    voter = relationship("User", secondary="answer_voter", backref="answer_voters")
 
     def __repr__(self):
         return f"<Answer(id={self.id}, question_id={self.question_id}, content={self.content}), author_id={self.author_id}, create_date={self.create_date}, modify_date={self.modify_date}>"
@@ -88,7 +90,7 @@ class User(Base):
     create_date = Column(DateTime, unique=True, nullable=False)
 
     def __repr__(self):
-        return f"<User(id={self.id}, username={self.username}, password={self.password}, email={self.email}, create_date={self.create_date}, modify_date={self.modify_date}>"
+        return f"<User(id={self.id}, username={self.username}, email={self.email}, create_date={self.create_date}>"
 
     @classmethod
     def create(cls, username: str, hashed_password: str, email: EmailStr) -> "User":
@@ -98,3 +100,19 @@ class User(Base):
             email=email,
             create_date=datetime.datetime.now(),
         )
+
+
+question_voter = Table(
+    'question_voter',
+    Base.metadata,
+    Column('user_id', Integer, ForeignKey('user.id'), primary_key=True),
+    Column('question_id', Integer, ForeignKey('question.id'), primary_key=True),
+)
+
+answer_voter = Table(
+    'answer_voter',
+    Base.metadata,
+    Column('user_id', Integer, ForeignKey('user.id'), primary_key=True),
+    Column('answer_id', Integer, ForeignKey('answer.id'), primary_key=True)
+)
+

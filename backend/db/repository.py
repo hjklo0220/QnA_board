@@ -5,12 +5,26 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
 
 from db.connection import get_db
-from db.orm import Question, Answer, User
+from db.orm import Question, Answer, User, question_voter
 
 
 class QuestionRepository:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
+
+    def vote_question(self, question_id: int, user_id: int) -> None:
+        question: Question = self.session.scalar(select(Question).where(Question.id == question_id))
+        user = self.session.scalar(select(User).where(User.id == user_id))
+        if question and user:
+            # question.voter에 user가 있는지 확인
+            if user in question.voter:
+                question.voter.remove(user)
+            else:
+                question.voter.append(user)
+        self.session.commit()
+        print(question.voter)
+
+        return question.voter
 
     def get_question_list(self, page_number: int, page_size: int) -> tuple:
         # 페이징 정보

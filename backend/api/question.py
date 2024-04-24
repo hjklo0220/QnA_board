@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from db.repository import QuestionRepository, UserRepository
 from db.orm import Question, User
@@ -98,4 +98,23 @@ def delete_question_handler(
         raise HTTPException(status_code=403, detail="Not authorized")
     
     question_repo.delete_question(question=question)
+
+@router.post("/{question_id}/vote", status_code=status.HTTP_204_NO_CONTENT)
+def vote_question_handler(
+    question_id: int,
+    access_token: str = Depends(get_access_token),
+    user_repo: UserRepository = Depends(),
+    user_service: UserService = Depends(),
+    question_repo: QuestionRepository = Depends(),
+) -> None:
+    username: str = user_service.decode_jwt(access_token=access_token)
+    user: User | None = user_repo.get_user(username=username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    question: Question | None = question_repo.get_question_by_id(question_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    question_repo.vote_question(question_id=question.id, user_id=user.id)
 
