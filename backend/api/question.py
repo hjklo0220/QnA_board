@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from db.repository import QuestionRepository, UserRepository
 from db.orm import Question, User
 from schema.question.response import QuestionListSchema, QuestionSchema
-from schema.question.request import CreateQuestionRequest
+from schema.question.request import CreateQuestionRequest, QuestionVoteRequest
 from security import get_access_token
 from service.user import UserService
 
@@ -100,9 +100,9 @@ def delete_question_handler(
     
     question_repo.delete_question(question=question)
 
-@router.post("/{question_id}/vote", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/vote", status_code=status.HTTP_204_NO_CONTENT)
 def vote_question_handler(
-    question_id: int,
+    request: QuestionVoteRequest,
     access_token: str = Depends(get_access_token),
     user_repo: UserRepository = Depends(),
     user_service: UserService = Depends(),
@@ -113,7 +113,7 @@ def vote_question_handler(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    question: Question | None = question_repo.get_question_by_id(question_id)
+    question: Question | None = question_repo.get_question_by_id(request.question_id)
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
 

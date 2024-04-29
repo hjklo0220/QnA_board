@@ -21,3 +21,9 @@ class CreateAnswerRequest(BaseModel):
         if not v or not v.strip():
             raise ValueError('not empty')
         return v
+    
+class QuestionVoteRequest(BaseModel):
+    question_id: int
+
+class AnswerVoteRequest(BaseModel):
+    answer_id: int
