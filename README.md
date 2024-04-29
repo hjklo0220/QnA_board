@@ -35,7 +35,7 @@ Svelte 동작 방식에 대한 이해
 
 ### 2-2. API
 
-<br>
+---
 
 |API명|URL|메소드|설명|
 |----|----|----|----|
@@ -63,7 +63,7 @@ Svelte 동작 방식에 대한 이해
         email: EmailStr
     ```
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |로그인|/user/login|POST|로그인을 한다|
@@ -87,6 +87,7 @@ Svelte 동작 방식에 대한 이해
         username: str
     ```
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 리스트 조회|/question/list|GET|질문 목록을 10개씩 페이징하여 조회한다|
@@ -113,6 +114,7 @@ Svelte 동작 방식에 대한 이해
         question_list: List[QuestionSchema]
     ```
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 상세 조회|/question/{question_id}|GET|질문 상세 내역을 조회한다|
@@ -138,6 +140,7 @@ Svelte 동작 방식에 대한 이해
         voter: List[UserSchema]
     ```
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 등록|/question/cteate|POST|질문을 작성한다|
@@ -156,7 +159,7 @@ Svelte 동작 방식에 대한 이해
 
     QuestionSchema
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 수정|/question/{question_id}|PATCH|질문을 수정한다|
@@ -170,6 +173,7 @@ Svelte 동작 방식에 대한 이해
 
     QuestionSchema
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 삭제|/question/{question_id}|DELETE|질문을 삭제한다|
@@ -184,7 +188,7 @@ Svelte 동작 방식에 대한 이해
     없음
 
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |답변 조회|/answer/{answer_id}|GET|답변 조회|
@@ -209,6 +213,7 @@ Svelte 동작 방식에 대한 이해
         voter: List[UserSchema]
     ```
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |답변 등록|/answer/cteate|POST|답변을 작성한다|
@@ -225,7 +230,7 @@ Svelte 동작 방식에 대한 이해
 
     AnswerSchema
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |답변 수정|/answer/{answer_id}|PATCH|답변을 수정한다|
@@ -239,6 +244,7 @@ Svelte 동작 방식에 대한 이해
 
     AnswerSchema
 
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |답변 삭제|/answer/{answer_id}|DELETE|답변을 삭제한다|
@@ -252,7 +258,7 @@ Svelte 동작 방식에 대한 이해
 
     없음
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |질문 추천|/question/vote|POST|질문을 추천한다|
@@ -270,7 +276,7 @@ Svelte 동작 방식에 대한 이해
 
     없음
 
-
+---
 |API명|URL|메소드|설명|
 |----|----|----|----|
 |답변 추천|/answer/vote|POST|답변을 추천한다|
@@ -292,7 +298,7 @@ Svelte 동작 방식에 대한 이해
 
 ### 2-2. 기능 상세
 
-<br>
+---
 
 유저 인증
 - OAuth2 인증방식을 사용한다.
