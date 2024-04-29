@@ -3,7 +3,7 @@ from starlette import status
 
 from db.repository import AnswerRepository, QuestionRepository, UserRepository
 from db.orm import Answer, Question, User
-from schema.question.request import CreateAnswerRequest
+from schema.question.request import AnswerVoteRequest, CreateAnswerRequest
 from schema.question.response import AnswerSchema
 from security import get_access_token
 from service.user import UserService
@@ -92,9 +92,9 @@ def delete_answer_handler(
     
     answer_repo.delete_answer(answer=answer)
 
-@router.post("/{answer_id}/vote", status_code=200)
+@router.post("/vote", status_code=200)
 def vote_answer_handler(
-    answer_id: int,
+    request: AnswerVoteRequest,
     access_token: str = Depends(get_access_token),
     user_repo: UserRepository = Depends(),
     user_service: UserService = Depends(),
@@ -105,7 +105,7 @@ def vote_answer_handler(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    answer: Answer | None = answer_repo.get_answer_by_answer_id(answer_id)
+    answer: Answer | None = answer_repo.get_answer_by_answer_id(request.answer_id)
     if not answer:
         raise HTTPException(status_code=404, detail="Answer not found")
 
